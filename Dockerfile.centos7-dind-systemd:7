@@ -15,31 +15,24 @@
 FROM centos:centos7
 MAINTAINER Rick Alm "rickalm@aol.com"
 
-# declare /run and /sys/fs as volumes so they are not tied to overlayfs and therfore "remountable"
-# declare /var/lib/docker as a volume so overlayfs doesnt get swamped with deltas
-# 
-VOLUME [ "/run", "/sys/fs/cgroup", "/var/lib/docker" ]
-ENTRYPOINT  ["/start_dind.sh"]
-CMD  ["/usr/lib/systemd/systemd"]
-ENV container docker
-
-# Split apart to improve docker build cache
+# Install all of the external components as a single step to reduce layer size
 #
 RUN \
   yum -y update \
     || exit 1; \
   \
-  # Swap out the "Containerized" SystemD for standard SystemD and add dbus; \
+  # Swap out the "Containerized" SystemD for standard SystemD if its installed; \
   \
   yum -y swap \
     -- remove systemd-container systemd-container-libs \
-    -- install systemd systemd-libs dbus \
+    -- install systemd systemd-libs \
     || exit 1; \
   \
   # Install other tools we will need; \
   \
   yum -y install \
     lxc \
+    dbus \
     less \
     iptables \
     || exit 1; \
@@ -65,18 +58,27 @@ RUN \
     graphical.target \
     || exit 1; \
   \
-  # enable tmpfs in this container; \
-  \
-  systemctl enable \
-    tmp.mount \
-    || exit 1; \
-  \
   # Install docker so we have a "DinD" environment; \
   \
   curl -sSL https://get.docker.com/ | sh \
     || exit 1; \
   \
+  # enable docker and tmpfs.mount; \
+  \
+  systemctl enable \
+    docker.service \
+    docker.socket \
+    tmp.mount \
+    || exit 1; \
+  \
   /bin/true
+
+# declare /run and /sys/fs as volumes so they are not tied to overlayfs and therfore "remountable"
+# declare /var/lib/docker as a volume so overlayfs doesnt get swamped with deltas
+# 
+VOLUME [ "/run", "/sys/fs/cgroup", "/var/lib/docker" ]
+ENTRYPOINT  ["/start_dind.sh"]
+ENV container docker
 
 # Add our start scripts to the image
 #
