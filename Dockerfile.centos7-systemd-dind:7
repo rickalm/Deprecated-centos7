@@ -21,14 +21,14 @@ RUN \
   \
   # Launch Docker through start script; \
   \
-  systemctl disable \
+  systemctl enable \
     docker.service \
     docker.socket \
     || exit 1; \
   \
   /bin/true
 
-ENTRYPOINT  ["/start_dind.sh"]
+ENTRYPOINT  ["/start_systemd.sh"]
 
 # Add our start scripts to the image
 #

@@ -50,7 +50,7 @@ done
 
 # If we were given a command line, pass control to it
 #
-[[ $1 ]] && exec "$@"
+[[ $1 ]] && exec $@
 
 # Otherwise launch systemd (with optional args from environment variable)
 #
