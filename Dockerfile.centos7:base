@@ -84,6 +84,8 @@ RUN \
   yum -y clean all \
     || exit 1; \
   \
+  # Make bash the entrypoint till someone changes that; \
+  \
   ln -sf /bin/bash /entrypoint.sh \
     || exit 1; \
   \
