@@ -23,7 +23,7 @@ ENTRYPOINT  ["/entrypoint.sh"]
 # declare /run and /sys/fs as volumes so they are not tied to overlayfs and therfore "remountable"
 # declare /var/lib/docker as a volume so overlayfs doesnt get swamped with deltas
 # 
-VOLUME [ "/run", "/sys/fs/cgroup", "/var/lib/docker" ]
+VOLUME [ "/run", "/sys/fs/cgroup", "/data" ]
 
 # Install all of the external components as a single step to reduce layer size
 #
@@ -72,6 +72,11 @@ RUN \
   # Install docker so we can have a "DinD" environment; \
   \
   curl -sSL https://get.docker.com/ | sh \
+    || exit 1; \
+  \
+  # Symlink /var/lib/docker into the /data volume to reduce overhead on overlayfs; \
+  \
+  ln -sf /data/var/lib/docker /var/lib/docker \
     || exit 1; \
   \
   # Cleanup YUM files to reduce image size; \
