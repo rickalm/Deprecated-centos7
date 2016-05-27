@@ -2,7 +2,7 @@
 
 # If /remount_cgroups.done exists then we have already done our job and return
 #
-[ -f /remount_cgroups.done ] && exit 0
+[ -f /tmp/remount_cgroups.done ] && exit 0
 
 # Taken from https://github.com/jpetazzo/dind
 #
@@ -82,4 +82,4 @@ grep -qw devices /proc/1/cgroup ||
 
 # ok, create our flag file so we dont run again
 #
-touch /remount_cgroups.done
+touch /tmp/remount_cgroups.done

@@ -14,6 +14,16 @@
 
 FROM centos:centos7
 MAINTAINER Rick Alm "rickalm@aol.com"
+ENV container docker
+
+# Try to always use /entrypoint.sh as entrypoint to a container
+#
+ENTRYPOINT  ["/entrypoint.sh"]
+
+# declare /run and /sys/fs as volumes so they are not tied to overlayfs and therfore "remountable"
+# declare /var/lib/docker as a volume so overlayfs doesnt get swamped with deltas
+# 
+VOLUME [ "/run", "/sys/fs/cgroup", "/var/lib/docker" ]
 
 # Install all of the external components as a single step to reduce layer size
 #
@@ -34,13 +44,9 @@ RUN \
     lxc \
     dbus \
     less \
+    ipset \
     iptables \
     unzip \
-    || exit 1; \
-  \
-  # Cleanup YUM files to reduce image size; \
-  \
-  yum -y clean all \
     || exit 1; \
   \
   # Deactivate units that will not work in a container; \
@@ -63,15 +69,21 @@ RUN \
     tmp.mount \
     || exit 1; \
   \
-  # Install docker so we have a "DinD" environment; \
+  # Install docker so we can have a "DinD" environment; \
   \
   curl -sSL https://get.docker.com/ | sh \
     || exit 1; \
   \
+  # Cleanup YUM files to reduce image size; \
+  \
+  yum -y clean all \
+    || exit 1; \
+  \
+  ln -s /bin/bash /entrypoint.sh \
+    || exit 1; \
+  \
   /bin/true
 
-# declare /run and /sys/fs as volumes so they are not tied to overlayfs and therfore "remountable"
-# declare /var/lib/docker as a volume so overlayfs doesnt get swamped with deltas
-# 
-VOLUME [ "/run", "/sys/fs/cgroup", "/var/lib/docker" ]
-ENV container docker
+# Add our start scripts to the image
+#
+ADD files /

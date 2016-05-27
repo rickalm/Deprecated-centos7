@@ -16,6 +16,7 @@ FROM rickalm/centos7-base:7
 MAINTAINER Rick Alm "rickalm@aol.com"
 
 # Install all of the external components as a single step to reduce layer size
+# symlink the start_systemd script as entrypoint
 #
 RUN \
   \
@@ -26,10 +27,7 @@ RUN \
     docker.socket \
     || exit 1; \
   \
+  ln -s /start_systemd.sh /entrypoint.sh \
+    || exit 1; \
+  \
   /bin/true
-
-ENTRYPOINT  ["/start_systemd.sh"]
-
-# Add our start scripts to the image
-#
-ADD files /

@@ -52,6 +52,6 @@ done
 #
 [[ $1 ]] && exec $@
 
-# Otherwise launch systemd (with optional args from environment variable)
+# Otherwise pass control to start_systemd
 #
-exec /usr/lib/systemd/systemd ${SYSTEMD_OPTS}
+. /start_systemd.sh $@
