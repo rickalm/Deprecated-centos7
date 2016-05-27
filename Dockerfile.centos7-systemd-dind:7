@@ -12,7 +12,7 @@
 ###
 ##################################
 
-FROM rickalm/centos7-base:7
+FROM rickalm/centos7:base
 MAINTAINER Rick Alm "rickalm@aol.com"
 
 # Install all of the external components as a single step to reduce layer size
@@ -27,7 +27,7 @@ RUN \
     docker.socket \
     || exit 1; \
   \
-  ln -s /start_systemd.sh /entrypoint.sh \
+  ln -sf /start_systemd.sh /entrypoint.sh \
     || exit 1; \
   \
   /bin/true

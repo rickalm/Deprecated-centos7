@@ -79,7 +79,7 @@ RUN \
   yum -y clean all \
     || exit 1; \
   \
-  ln -s /bin/bash /entrypoint.sh \
+  ln -sf /bin/bash /entrypoint.sh \
     || exit 1; \
   \
   /bin/true
