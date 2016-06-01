@@ -14,16 +14,6 @@
 
 FROM centos:centos7
 MAINTAINER Rick Alm "rickalm@aol.com"
-ENV container docker
-
-# Try to always use /entrypoint.sh as entrypoint to a container
-#
-ENTRYPOINT  ["/entrypoint.sh"]
-
-# declare /run and /sys/fs as volumes so they are not tied to overlayfs and therfore "remountable"
-# declare /var/lib/docker as a volume so overlayfs doesnt get swamped with deltas
-# 
-VOLUME [ "/run", "/sys/fs/cgroup", "/data" ]
 
 # Install all of the external components as a single step to reduce layer size
 #
@@ -94,3 +84,16 @@ RUN \
 # Add our start scripts to the image
 #
 ADD files /
+
+# Set environment var container to docker
+#
+ENV container docker
+
+# Try to always use /entrypoint.sh as entrypoint to a container
+#
+ENTRYPOINT  ["/entrypoint.sh"]
+
+# declare /run and /sys/fs as volumes so they are not tied to overlayfs and therfore "remountable"
+# declare /var/lib/docker as a volume so overlayfs doesnt get swamped with deltas
+# 
+VOLUME [ "/run", "/sys/fs/cgroup", "/data" ]
