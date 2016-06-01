@@ -12,7 +12,7 @@
 ###
 ##################################
 
-FROM rickalm/centos7:base-006
+FROM rickalm/centos7:base-dev
 MAINTAINER Rick Alm "rickalm@aol.com"
 
 # Install all of the external components as a single step to reduce layer size
