@@ -1,22 +1,25 @@
 #! /bin/bash
 
+cmd=docker
+[ "$1" == "local" ] && cmd=false && shift
+
 # Since these are built by hub.docker.com, no need to build locally anymore
 # but as a backup if they cannot be pulled then create locally
 #
 [ -n "$1" ] && rev=-${1}
 [ -z "$1" ] && rev=-dev
 
-docker pull rickalm/centos7:base${rev} ||
+${cmd} pull rickalm/centos7:base${rev} ||
   ( echo Building rickalm/centos7:base${rev} locally && 
     docker build -f Dockerfile.centos7:base -t rickalm/centos7:base${rev} . )
 
-docker pull rickalm/centos7:dind-systemd${rev} || 
+${cmd} pull rickalm/centos7:dind-systemd${rev} || 
   ( echo Building rickalm/centos7:dind-systemd${rev} locally && 
     sed -i Dockerfile.centos7:dind-systemd -e "s~FROM .*~FROM rickalm/centos7:base${rev}~" &&
     docker build -f Dockerfile.centos7:dind-systemd -t rickalm/centos7:dind-systemd${rev} . &&
     docker push rickalm/centos7:dind-systemd${rev} )
 
-docker pull rickalm/centos7:systemd-dind${rev} ||
+${cmd} pull rickalm/centos7:systemd-dind${rev} ||
   ( echo Building rickalm/centos7:systemd-dind${rev} locally && 
     sed -i Dockerfile.centos7:systemd-dind -e "s~FROM .*~FROM rickalm/centos7:base${rev}~" &&
     docker build -f Dockerfile.centos7:systemd-dind -t rickalm/centos7:systemd-dind${rev} . &&

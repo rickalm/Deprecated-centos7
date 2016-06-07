@@ -29,16 +29,21 @@ rm -rf /var/run/docker.pid
 #  - pass control to systemd
 #
 
-DOCKERD_GRAPH_DIR=/var/lib/docker
-DOCKERD_GRAPH_DIR=$(readlink ${DOCKERD_GRAPH_DIR})
-DOCKER_DAEMON_ARGS=${DOCKER_DAEMON_ARGS} --graph=${DOCKERD_GRAPH_DIR}
+DOCKERD_GRAPH_DIR="/var/lib/docker"
+DOCKERD_GRAPH_DIR="$(readlink ${DOCKERD_GRAPH_DIR})"
+[ ! -d ${DOCKERD_GRAPH_DIR} ] && mkdir -p ${DOCKERD_GRAPH_DIR}
+
+DOCKERD_LOG_DIR="/var/lib/docker"
+DOCKERD_LOG_DIR="$(readlink ${DOCKERD_LOG_DIR})"
+[ ! -d ${DOCKERD_LOG_DIR} ] && mkdir -p ${DOCKERD_LOG_DIR}
+
+DOCKER_DAEMON_ARGS="${DOCKER_DAEMON_ARGS} --graph=${DOCKERD_GRAPH_DIR}"
 
 [ "$DOCKERD_PORT" ] && exec docker daemon -H unix:///var/run/docker.sock -H 0.0.0.0:$DOCKERD_PORT $DOCKER_DAEMON_ARGS
 
 # Launch dockerd as a daemon
 #
-[ ! -d /var/log/docker ] && mkdir -p /var/log/docker
-docker daemon -H unix:///var/run/docker.sock $DOCKER_DAEMON_ARGS &>/var/log/docker/docker.log &
+docker daemon -H unix:///var/run/docker.sock $DOCKER_DAEMON_ARGS &>${DOCKERD_LOG_DIR}/docker.log &
 
 # Set timeout 60 seconds from now
 #

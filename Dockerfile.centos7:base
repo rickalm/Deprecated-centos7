@@ -69,6 +69,9 @@ RUN \
   ln -sf /data/var/lib/docker /var/lib/docker \
     || exit 1; \
   \
+  ln -sf /data/var/log/docker /var/log/docker \
+    || exit 1; \
+  \
   # Cleanup YUM files to reduce image size; \
   \
   yum -y clean all \
@@ -94,6 +97,5 @@ ENV container docker
 ENTRYPOINT  ["/entrypoint.sh"]
 
 # declare /run and /sys/fs as volumes so they are not tied to overlayfs and therfore "remountable"
-# declare /var/lib/docker as a volume so overlayfs doesnt get swamped with deltas
 # 
 VOLUME [ "/run", "/sys/fs/cgroup", "/data" ]
