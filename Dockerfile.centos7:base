@@ -33,10 +33,6 @@ RUN \
   yum -y install \
     lxc \
     dbus \
-    less \
-    ipset \
-    iptables \
-    unzip \
     || exit 1; \
   \
   # Deactivate units that will not work in a container; \
@@ -72,14 +68,14 @@ RUN \
   ln -sf /data/var/log/docker /var/log/docker \
     || exit 1; \
   \
-  # Cleanup YUM files to reduce image size; \
-  \
-  yum -y clean all \
-    || exit 1; \
-  \
   # Make bash the entrypoint till someone changes that; \
   \
   ln -sf /bin/bash /entrypoint.sh \
+    || exit 1; \
+  \
+  # Cleanup YUM files to reduce image size; \
+  \
+  yum -y clean all \
     || exit 1; \
   \
   /bin/true
