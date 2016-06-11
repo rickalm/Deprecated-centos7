@@ -1,0 +1,16 @@
+#! /bin/bash
+
+rev=${1}
+grep {$rev} .version && echo "Already tagged at that version, aborting" && exit 1
+git tag | grep ${rev} && echo "Git Tag already exists for that version, aborting" && exit 1
+
+echo ${rev} >.version
+
+sed -i.bak -e "s~FROM .*~FROM rickalm/centos7:base-${rev}~" Dockerfile.centos7:dind-systemd
+sed -i.bak -e "s~FROM .*~FROM rickalm/centos7:base-${rev}~" Dockerfile.centos7:systemd-dind
+rm Dockerfile.centos7*.bak
+
+git add .version Dockerfile.centos7:dind-systemd Dockerfile.centos7:systemd-dind
+git commit -m "labeling as revision ${rev}"
+git tag ${rev}
+git push --tags
