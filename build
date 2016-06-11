@@ -7,7 +7,11 @@ cmd=docker
 # but as a backup if they cannot be pulled then create locally
 #
 [ -n "$1" ] && rev=-${1}
-[ -z "$1" ] && rev=-dev
+
+if [ -z "$1" ]; then
+  rev=-$(cat .version)
+  echo No version specified, using .version ${rev}
+fi
 
 ${cmd} pull rickalm/centos7:base${rev} ||
   ( echo Building rickalm/centos7:base${rev} locally && 
@@ -16,14 +20,14 @@ ${cmd} pull rickalm/centos7:base${rev} ||
 
 ${cmd} pull rickalm/centos7:dind-systemd${rev} || 
   ( echo Building rickalm/centos7:dind-systemd${rev} locally && 
-    sed -ibak -e "s~FROM .*~FROM rickalm/centos7:base${rev}~" Dockerfile.centos7:dind-systemd &&
-    rm *bak &&
+    sed -i.bak -e "s~FROM .*~FROM rickalm/centos7:base${rev}~" Dockerfile.centos7:dind-systemd &&
+    rm *.bak &&
     docker build --no-cache -f Dockerfile.centos7:dind-systemd -t rickalm/centos7:dind-systemd${rev} . &&
     docker push rickalm/centos7:dind-systemd${rev} )
 
 ${cmd} pull rickalm/centos7:systemd-dind${rev} ||
   ( echo Building rickalm/centos7:systemd-dind${rev} locally && 
-    sed -ibak -e "s~FROM .*~FROM rickalm/centos7:base${rev}~" Dockerfile.centos7:systemd-dind &&
-    rm *bak &&
+    sed -i.bak -e "s~FROM .*~FROM rickalm/centos7:base${rev}~" Dockerfile.centos7:systemd-dind &&
+    rm *.bak &&
     docker build --no-cache -f Dockerfile.centos7:systemd-dind -t rickalm/centos7:systemd-dind${rev} . &&
     docker push rickalm/centos7:systemd-dind${rev} )
