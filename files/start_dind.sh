@@ -1,7 +1,5 @@
 #! /bin/bash
 
-set -x
-
 # Anounce ourselves
 #
 echo Entering $0
